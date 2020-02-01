@@ -46,8 +46,9 @@ class PricingEngine {
     // CB has everything output needs save rateGroup, and that's determined directly from rateCode
     // Key rates by code so we can go from code->group
     // Group CB by rateGroup (looked up from its code), sort by price, take the head, that's it!
-    val ratesByCode: Map[RateCode, RateGroup] = rates.map(rate => (rate.rateCode, rate.rateGroup)).toMap
-    val pricesByCabinAndRateGroup: Map[(CabinCode, RateGroup), Seq[CabinPrice]] = prices.groupBy(price => (price.cabinCode, ratesByCode(price.rateCode)))
+    val rateGroupsByCode: Map[RateCode, RateGroup] = rates.map(rate => (rate.rateCode, rate.rateGroup)).toMap
+    val pricesByCabinAndRateGroup: Map[(CabinCode, RateGroup), Seq[CabinPrice]] =
+      prices.groupBy(price => (price.cabinCode, rateGroupsByCode.getOrElse(price.rateCode, "")))
     pricesByCabinAndRateGroup.map { case ((cabinCode, rateGroup), pricesForGroup) =>
       val sorted: ((CabinCode, RateGroup), Seq[CabinPrice]) = ((cabinCode, rateGroup), pricesForGroup.sortBy(_.price))
       val bestPrice = sorted._2.head
