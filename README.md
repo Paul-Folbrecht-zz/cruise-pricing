@@ -2,5 +2,5 @@ The preferred way to run is to create an Intellij Idea project from the .sbt fil
 
 Runnable objects are also provided. From the command line:
 
-- Building using sbt compile
+- Build using sbt compile
 - Run using sbt run
