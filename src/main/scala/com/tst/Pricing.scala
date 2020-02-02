@@ -1,5 +1,19 @@
 package com.tst
 
+import com.tst.Pricing._
+
+case class Rate(rateCode: RateCode,
+                rateGroup: RateGroup)
+
+case class CabinPrice(cabinCode: RateGroup,
+                      rateCode: RateCode,
+                      price: BigDecimal)
+
+case class BestGroupPrice(cabinCode: CabinCode,
+                          rateCode: RateCode,
+                          price: BigDecimal,
+                          rateGroup: RateGroup)
+
 object Pricing {
   type RateCode = String
   type RateGroup = String
@@ -26,21 +40,7 @@ object Pricing {
   }
 }
 
-case class Rate(rateCode: String,
-                rateGroup: String)
-
-case class CabinPrice(cabinCode: String,
-                      rateCode: String,
-                      price: BigDecimal)
-
-case class BestGroupPrice(cabinCode: String,
-                          rateCode: String,
-                          price: BigDecimal,
-                          rateGroup: String)
-
 class PricingEngine {
-  import Pricing._
-
   def getBestGroupPrices(rates: Seq[Rate],
                          prices: Seq[CabinPrice]): Seq[BestGroupPrice] = {
     // CB has everything output needs save rateGroup, and that's determined directly from rateCode
