@@ -13,27 +13,30 @@ class PromotionsSpec extends AnyFunSpec with Matchers {
   )
 
   describe("A cruise promotions system") {
-//    Seq(
-//      PromotionCombo(Seq(P1, P2)),
-//      PromotionCombo(Seq(P1, P4, P5)),
-//      PromotionCombo(Seq(P2, P3)),
-//      PromotionCombo(Seq(P3, P4, P5))
-//    )
     it("Should find all valid promotion combinations") {
-      println(new Promotions().allCombinablePromotions(promotions).mkString("\n"))
+      val result = new Promotions().allCombinablePromotions(promotions)
+      result shouldBe Seq(
+        PromotionCombo(Seq("P1", "P2")),
+        PromotionCombo(Seq("P1", "P4", "P5")),
+        PromotionCombo(Seq("P2", "P3")),
+        PromotionCombo(Seq("P3", "P4", "P5"))
+      )
     }
 
-
-//    PromotionCombo(Seq(P1, P2)),
-//    PromotionCombo(Seq(P1, P4, P5))
     it("Should find valid promotion combinations 1") {
-      println(new Promotions().combinablePromotions("P1", promotions).mkString("\n"))
+      val result = new Promotions().combinablePromotions("P1", promotions)
+      result shouldBe Seq(
+        PromotionCombo(Seq("P1", "P2")),
+        PromotionCombo(Seq("P1", "P4", "P5"))
+      )
     }
 
-//    PromotionCombo(Seq(P3, P2)),
-//    PromotionCombo(Seq(P3, P4, P5))
     it("Should find valid promotion combinations 2") {
-      println(new Promotions().combinablePromotions("P3", promotions).mkString("\n"))
+      val result = new Promotions().combinablePromotions("P3", promotions)
+      result shouldBe Seq(
+        PromotionCombo(Seq("P2", "P3")),
+        PromotionCombo(Seq("P3", "P4", "P5"))
+      )
     }
   }
 }
