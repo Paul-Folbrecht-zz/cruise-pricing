@@ -2,6 +2,8 @@ package com.tst
 
 import com.tst.Promotions.PromotionCode
 
+import scala.annotation.tailrec
+
 case class Promotion(code: PromotionCode,
                      notCombinableWith: Seq[String])
 
@@ -32,21 +34,17 @@ class Promotions {
                                          allPromotions: Set[Promotion],
                                          solution: Set[PromotionCombo]): Set[PromotionCombo] = {
     allPromotions.flatMap { promotion =>
-      if (promotion.notCombinableWith.toSet.intersect(codes).isEmpty)
-        combinablePromotionsHelper(codes + promotion.code, allPromotions.filterNot(_ == promotion), solution)
-      else solution + PromotionCombo(codes.toSeq.sorted)
+      if (promotion.notCombinableWith.toSet.intersect(codes).nonEmpty) solution + PromotionCombo(codes.toSeq.sorted)
+      else combinablePromotionsHelper(codes + promotion.code, allPromotions.filterNot(_ == promotion), solution)
     }
   }
 
   private def cullSubsets(result: Iterable[PromotionCombo]): Seq[PromotionCombo] = {
+    def isSubset(one: PromotionCombo, two: PromotionCombo): Boolean = one.promotionCodes.toSet.subsetOf(two.promotionCodes.toSet)
+
     result.foldLeft(Set[PromotionCombo]()) { case (set, combo) =>
       if (set.exists(isSubset(combo, _))) set
       else set + combo
     }.toSeq
   }
-
-  private def isSubset(one: PromotionCombo, two: PromotionCombo): Boolean =
-    one.promotionCodes.toSet.subsetOf(two.promotionCodes.toSet) ||
-      two.promotionCodes.toSet.subsetOf(one.promotionCodes.toSet) ||
-      one.promotionCodes.toSet == two.promotionCodes.toSet
 }
