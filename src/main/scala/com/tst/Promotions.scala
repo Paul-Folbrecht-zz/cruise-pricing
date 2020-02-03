@@ -17,7 +17,7 @@ class Promotions {
     cullSubsets(result)
   }
 
-  def combinablePromotions(promotionCode: String,
+  def combinablePromotions(promotionCode: PromotionCode,
                            allPromotions: Seq[Promotion],
                            cull: Boolean = true): Seq[PromotionCombo] = {
     // Add input code to the solution
@@ -28,7 +28,7 @@ class Promotions {
     if (cull) cullSubsets(result) else result.toSeq
   }
 
-  private def combinablePromotionsHelper(codes: Set[String],
+  private def combinablePromotionsHelper(codes: Set[PromotionCode],
                                          allPromotions: Set[Promotion],
                                          solution: Set[PromotionCombo]): Set[PromotionCombo] = {
     allPromotions.flatMap { promotion =>
