@@ -12,9 +12,11 @@ class PromotionsSpec extends AnyFunSpec with Matchers {
     Promotion("P5", Seq("P2"))
   )
 
+  protected def makePromotions(): Promotions = new Promotions
+
   describe("A cruise promotions system") {
     it("Should find all valid promotion combinations") {
-      val result = new Promotions().allCombinablePromotions(promotions)
+      val result = makePromotions().allCombinablePromotions(promotions)
       result shouldBe Seq(
         PromotionCombo(Seq("P1", "P2")),
         PromotionCombo(Seq("P1", "P4", "P5")),
@@ -24,7 +26,7 @@ class PromotionsSpec extends AnyFunSpec with Matchers {
     }
 
     it("Should find valid promotion combinations 1") {
-      val result = new Promotions().combinablePromotions("P1", promotions)
+      val result = makePromotions().combinablePromotions("P1", promotions)
       result shouldBe Seq(
         PromotionCombo(Seq("P1", "P2")),
         PromotionCombo(Seq("P1", "P4", "P5"))
@@ -32,11 +34,15 @@ class PromotionsSpec extends AnyFunSpec with Matchers {
     }
 
     it("Should find valid promotion combinations 2") {
-      val result = new Promotions().combinablePromotions("P3", promotions)
+      val result = makePromotions().combinablePromotions("P3", promotions)
       result shouldBe Seq(
         PromotionCombo(Seq("P2", "P3")),
         PromotionCombo(Seq("P3", "P4", "P5"))
       )
     }
   }
+}
+
+class PromotionsNonRecursiveSpec extends PromotionsSpec {
+  override protected def makePromotions(): Promotions = new PromotionsNonRecursive
 }

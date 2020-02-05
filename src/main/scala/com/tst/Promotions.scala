@@ -14,16 +14,12 @@ object Promotions {
 class Promotions {
   def allCombinablePromotions(allPromotions: Seq[Promotion]): Seq[PromotionCombo] = {
     val result = allPromotions.flatMap(promotion => combinablePromotions(promotion.code, allPromotions, cull = false))
-    cullSubsets(result)
+    cullSubsets(result) // Cull at the end only stricly as an optimization.
   }
 
   def combinablePromotions(promotionCode: PromotionCode,
                            allPromotions: Seq[Promotion],
                            cull: Boolean = true): Seq[PromotionCombo] = {
-    // Add input code to the solution
-    // For all other promotions
-    //   - if nothing in current set is on excl list, add it to cur111rent codes, call function again with new set of codes
-    // If we get thru all without adding any, add current codes to solutions
     val result = combinablePromotionsHelper(Set(promotionCode), allPromotions.toSet, Set.empty)
     if (cull) cullSubsets(result) else result.toSeq
   }
@@ -44,5 +40,31 @@ class Promotions {
       if (set.exists(isSubset(combo, _))) set
       else set + combo
     }.toSeq
+  }
+}
+
+class PromotionsNonRecursive extends Promotions {
+  override def combinablePromotions(promotionCode: PromotionCode,
+                                    allPromotions: Seq[Promotion],
+                                    cull: Boolean = true): Seq[PromotionCombo] = {
+    var done = false
+    var combos: Set[PromotionCombo] = Set.empty
+    val rootPromotion = allPromotions.find(_.code == promotionCode)
+    var currentPromotions: Seq[Promotion] = allPromotions.filterNot(p => rootPromotion.exists(_.notCombinableWith.contains(p.code)))
+
+    // Iterate, building a combo on each pass and ignoring/removing exclusions, until no exclusions remain.
+    while (!done) {
+      val (combo, exclusions): (Set[PromotionCode], Set[PromotionCode]) =
+        currentPromotions.foldLeft((Set[PromotionCode](), Set[PromotionCode]())) { case ((comboSet, newExclusionsSet), promotion) =>
+          if (promotion.notCombinableWith.toSet.intersect(comboSet).nonEmpty) (comboSet, newExclusionsSet + promotion.code)
+          else (comboSet + promotion.code, newExclusionsSet)
+        }
+
+      combos = combos + PromotionCombo(combo.toSeq.sorted)
+      if (exclusions.isEmpty) done = true
+      else currentPromotions = currentPromotions.filter(p => p.notCombinableWith.toSet.intersect(exclusions).isEmpty || p.code == promotionCode)
+    }
+
+    combos.toSeq
   }
 }
