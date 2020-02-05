@@ -14,7 +14,7 @@ object Promotions {
 class Promotions {
   def allCombinablePromotions(allPromotions: Seq[Promotion]): Seq[PromotionCombo] = {
     val result = allPromotions.flatMap(promotion => combinablePromotions(promotion.code, allPromotions, cull = false))
-    cullSubsets(result) // Cull at the end only stricly as an optimization.
+    cullSubsets(result) // Cull at the end only strictly as an optimization.
   }
 
   def combinablePromotions(promotionCode: PromotionCode,
