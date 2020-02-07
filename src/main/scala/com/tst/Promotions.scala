@@ -28,6 +28,7 @@ class Promotions {
                                          allPromotions: Set[Promotion],
                                          solution: Set[PromotionCombo]): Set[PromotionCombo] = {
     allPromotions.flatMap { promotion =>
+      // The recursive base case is finding an exclusion - that terminates this iteration.
       if (promotion.notCombinableWith.toSet.intersect(codes).nonEmpty) solution + PromotionCombo(codes.toSeq.sorted)
       else combinablePromotionsHelper(codes + promotion.code, allPromotions.filterNot(_ == promotion), solution)
     }
@@ -50,6 +51,7 @@ class PromotionsNonRecursive extends Promotions {
     var done = false
     var combos: Set[PromotionCombo] = Set.empty
     val rootPromotion = allPromotions.find(_.code == promotionCode)
+    // We can remove the target promotion from the set immediately.
     var currentPromotions: Seq[Promotion] = allPromotions.filterNot(p => rootPromotion.exists(_.notCombinableWith.contains(p.code)))
 
     // Iterate, building a combo on each pass and ignoring/removing exclusions, until no exclusions remain.
@@ -61,6 +63,7 @@ class PromotionsNonRecursive extends Promotions {
         }
 
       combos = combos + PromotionCombo(combo.toSeq.sorted)
+      // When no exclusions are encountered, we're done; else, remove the exclusions just encountered.
       if (exclusions.isEmpty) done = true
       else currentPromotions = currentPromotions.filter(p => p.notCombinableWith.toSet.intersect(exclusions).isEmpty || p.code == promotionCode)
     }
